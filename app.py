@@ -18,7 +18,11 @@ def main():
         st.stop()
 
     # Fetch news articles for the specified stocks
-    articles = fetch_news(stocks)
+    try:
+        articles = fetch_news(stocks)
+    except Exception as e:
+        st.error(f"Error fetching news articles: {str(e)}")
+        st.stop()
 
     if not articles:
         st.warning("No news articles found for the specified stocks.")
@@ -33,9 +37,12 @@ def main():
 def fetch_news(stocks):
     articles = []
     for stock in stocks:
-        # Fetch the latest 20 news articles for each stock
-        news = newsapi.get_everything(q=stock, language='en', sort_by='publishedAt', page_size=20)
-        articles.extend(news.get('articles', []))
+        try:
+            # Fetch the latest 20 news articles for each stock
+            news = newsapi.get_everything(q=stock, language='en', sort_by='publishedAt', page_size=20)
+            articles.extend(news.get('articles', []))
+        except Exception as e:
+            st.error(f"Error fetching news for stock {stock}: {str(e)}")
     return articles
 
 def analyze_sentiment(articles):
